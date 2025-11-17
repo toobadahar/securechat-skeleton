@@ -1,111 +1,106 @@
+"# securechat-skeleton" 
+🔐 SecureChat – Encrypted Messaging System
 
-# SecureChat – Assignment #2 (CS-3002 Information Security, Fall 2025)
+SecureChat is a Python client–server application implementing end-to-end encrypted communication without TLS/SSL.
+All encryption, certificate validation, signatures, and key exchange are done at the application layer, as required by the assignment.
 
-This repository is the **official code skeleton** for your Assignment #2.  
-You will build a **console-based, PKI-enabled Secure Chat System** in **Python**, demonstrating how cryptographic primitives combine to achieve:
+🚀 Features
 
-**Confidentiality, Integrity, Authenticity, and Non-Repudiation (CIANR)**.
+PKI System
+
+Local Root CA
+
+Server & Client certificates
+
+Hostname + expiry checks
+
+Rejects invalid/self-signed certs
+
+Secure Login
+
+Random salt (16B+)
+
+SHA256(salt || password)
+
+No plaintext passwords stored or logged
+
+MySQL backend
+
+Key Exchange & Encryption
+
+Diffie–Hellman shared secret
+
+AES-128 CBC with PKCS#7 padding
+
+Fresh IV per message
+
+Integrity & Authenticity
+
+SHA256(seqno || ts || ciphertext)
+
+RSA signature per message
+
+Replay protection (strict sequence numbers)
+
+Non-Repudiation
+
+Append-only transcript
+
+Server-signed Session Receipt
+
+📁 Project Structure
+certs/
+client.py
+server.py
+cert_utils.py
+gen_ca.py
+gen_cert.py
+test_mysql.py
+transcripts/
+README.md
+
+▶️ How to Run
+1) Generate CA & Certificates
+python gen_ca.py
+python gen_cert.py server
+python gen_cert.py client
+
+2) Start Server
+python server.py
+
+3) Start Client
+python client.py
+
+🧪 PCAP Capture (Wireshark or Terminal)
+tcpdump -i any -w securechat.pcap
+# or
+tshark -i any -w securechat.pcap
 
 
-## 🧩 Overview
+Filter encrypted traffic:
 
-You are provided only with the **project skeleton and file hierarchy**.  
-Each file contains docstrings and `TODO` markers describing what to implement.
+tcp.port == 5000
 
-Your task is to:
-- Implement the **application-layer protocol**.
-- Integrate cryptographic primitives correctly to satisfy the assignment spec.
-- Produce evidence of security properties via Wireshark, replay/tamper tests, and signed session receipts.
+🛠 Technologies Used
 
-## 🏗️ Folder Structure
-```
-securechat-skeleton/
-├─ app/
-│  ├─ client.py              # Client workflow (plain TCP, no TLS)
-│  ├─ server.py              # Server workflow (plain TCP, no TLS)
-│  ├─ crypto/
-│  │  ├─ aes.py              # AES-128(ECB)+PKCS#7 (use cryptography lib)
-│  │  ├─ dh.py               # Classic DH helpers + key derivation
-│  │  ├─ pki.py              # X.509 validation (CA signature, validity, CN)
-│  │  └─ sign.py             # RSA SHA-256 sign/verify (PKCS#1 v1.5)
-│  ├─ common/
-│  │  ├─ protocol.py         # Pydantic message models (hello/login/msg/receipt)
-│  │  └─ utils.py            # Helpers (base64, now_ms, sha256_hex)
-│  └─ storage/
-│     ├─ db.py               # MySQL user store (salted SHA-256 passwords)
-│     └─ transcript.py       # Append-only transcript + transcript hash
-├─ scripts/
-│  ├─ gen_ca.py              # Create Root CA (RSA + self-signed X.509)
-│  └─ gen_cert.py            # Issue client/server certs signed by Root CA
-├─ tests/manual/NOTES.md     # Manual testing + Wireshark evidence checklist
-├─ certs/.keep               # Local certs/keys (gitignored)
-├─ transcripts/.keep         # Session logs (gitignored)
-├─ .env.example              # Sample configuration (no secrets)
-├─ .gitignore                # Ignore secrets, binaries, logs, and certs
-├─ requirements.txt          # Minimal dependencies
-└─ .github/workflows/ci.yml  # Compile-only sanity check (no execution)
-```
+Python 3
 
-## ⚙️ Setup Instructions
+PyCryptodome (AES, RSA, DH, SHA256)
 
-1. **Fork this repository** to your own GitHub account(using official nu email).  
-   All development and commits must be performed in your fork.
+OpenSSL
 
-2. **Set up environment**:
-   ```bash
-   python3 -m venv .venv && source .venv/bin/activate
-   pip install -r requirements.txt
-   cp .env.example .env
-   ```
+MySQL
 
-3. **Initialize MySQL** (recommended via Docker):
-   ```bash
-   docker run -d --name securechat-db        -e MYSQL_ROOT_PASSWORD=rootpass        -e MYSQL_DATABASE=securechat        -e MYSQL_USER=scuser        -e MYSQL_PASSWORD=scpass        -p 3306:3306 mysql:8
-   ```
+Wireshark
 
-4. **Create tables**:
-   ```bash
-   python -m app.storage.db --init
-   ```
+📌 Summary
 
-5. **Generate certificates** (after implementing the scripts):
-   ```bash
-   python scripts/gen_ca.py --name "FAST-NU Root CA"
-   python scripts/gen_cert.py --cn server.local --out certs/server
-   python scripts/gen_cert.py --cn client.local --out certs/client
-   ```
+SecureChat demonstrates full CIANR:
 
-6. **Run components** (after implementation):
-   ```bash
-   python -m app.server
-   # in another terminal:
-   python -m app.client
-   ```
+✔ Confidentiality (AES)
+✔ Integrity (SHA256)
+✔ Authenticity (RSA signatures)
+✔ Non-Repudiation (signed receipt)
+✔ Replay Defense (seqno)
 
-## 🚫 Important Rules
-
-- **Do not use TLS/SSL or any secure-channel abstraction**  
-  (e.g., `ssl`, HTTPS, WSS, OpenSSL socket wrappers).  
-  All crypto operations must occur **explicitly** at the application layer.
-
-- You are **not required** to implement AES, RSA, or DH math, Use any of the available libraries.
-- Do **not commit secrets** (certs, private keys, salts, `.env` values).
-- Your commits must reflect progressive development — at least **10 meaningful commits**.
-
-## 🧾 Deliverables
-
-When submitting on Google Classroom (GCR):
-
-1. A ZIP of your **GitHub fork** (repository).
-2. MySQL schema dump and a few sample records.
-3. Updated **README.md** explaining setup, usage, and test outputs.
-4. `RollNumber-FullName-Report-A02.docx`
-5. `RollNumber-FullName-TestReport-A02.docx`
-
-## 🧪 Test Evidence Checklist
-
-✔ Wireshark capture (encrypted payloads only)  
-✔ Invalid/self-signed cert rejected (`BAD_CERT`)  
-✔ Tamper test → signature verification fails (`SIG_FAIL`)  
-✔ Replay test → rejected by seqno (`REPLAY`)  
-✔ Non-repudiation → exported transcript + signed SessionReceipt verified offline  
+A complete, minimal, and secure Python messaging system.
