@@ -1,7 +1,0 @@
-{
-  "type": "receipt",
-  "first_seq": 1,
-  "last_seq": 5,
-  "transcript_sha256": "a9726e0af5564bac4062b9320bb37900598d260dcdcfbc4127349e64fd57fda3",
-  "sig": "mEK5yIbolxye+/R38g2R7hoKXej/T3loEp6xkWH0xHb1vyWtdyPL50HejIfDUrvgBo+CXG8K61waBlUbMu7m70/pwzjnl6j0fgFN3gnjV/9d0FMcN48LPJP54jIjf0V8iycmoMRTJ4rssrol7n0TXEOIGl23h5234vPIQ/YPxaAuvnt45KjHrjG2xHeqa/k/j4cW3jac+uI1SzlnEmWexT9QZUd2Meh2DYc87x8Zr7ZYDIBoMVXHf/MFHqpFyQnOgy8qCTBg9Jp1jZMG7sQ7NlZPTZCrM6wKtfKka/2mbtMyxugn6wSrSsy7/ugsseFfyF+QH5jXd1OV1rzOU0autw=="
-}

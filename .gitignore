@@ -1,0 +1,22 @@
+# Ignore sensitive certificate material
+certs/*_key.pem
+certs/*.key
+certs/*.csr
+certs/*.srl
+certs/*.pem   # ignores generated certs like session or ephemeral
+
+# Exceptions for safe public certs
+!certs/rootCA.crt
+!certs/server.crt
+!certs/client.crt
+
+# Ignore session logs
+session_receipt.json
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment files
+.env
+*.env
